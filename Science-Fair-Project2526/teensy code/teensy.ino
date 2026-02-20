@@ -19,7 +19,7 @@ void setup() {
         emg.setGain(GAIN_ONE); //amplified
     }
     //finding imu icm20948 sensor
-    if (!imu.begin_I2C(0x68)) {
+    if (!imu.begin_I2C(0x69)) {
         Serial.println("ICM20948 not found");    
     }   else {
         Serial.println("ICM20948 found");
