@@ -8,15 +8,18 @@ import pandas as pd
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODELS_DIR = os.path.join(BASE_DIR, "models")
+
 #setup
 def get_settings():
     #define params for training
     parser = argparse.ArgumentParser(description="train the tremor analysis model")
     #data stuff
     parser.add_argument("--csv",required=True,help="/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/imuandemgdata.csv",)
-    parser.add_argument("--model-out",default="/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/models/tremor_model.keras",)
-    parser.add_argument("--norm-out",default="/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/models/tremor_model_norm.npz",)
-    parser.add_argument("--meta-out",default="/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/models/tremormodelmeta.json",)
+    parser.add_argument("--model-out",default=os.path.join(MODELS_DIR, "tremor_model.keras"),)
+    parser.add_argument("--norm-out",default=os.path.join(MODELS_DIR, "tremor_model_norm.npz"),)
+    parser.add_argument("--meta-out",default=os.path.join(MODELS_DIR, "tremormodelmeta.json"),)
     #hyperparams
     parser.add_argument("--window", type=int, default=128, help="# of samples per snapshot")
     parser.add_argument("--stride", type=int, default=1)
@@ -244,21 +247,6 @@ def main():
 
     print("training done. model + norm + metadata saved.")
     plot_results(history, args.task)
-
-    #save results
-    os.makedirs(os.path.dirname(args.model_out), exist_ok=True)
-    model.save(args.model_out)
-    print(f"training done. model saved")
-    #save a summary
-    metadata={
-        "task":args.task,
-        "final_loss":float(history.history['loss'][-1]),
-        "final_val_loss":float(history.history["val_loss"][-1]),
-        "window_size":args.window
-    }
-    with open("/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/tremormodelmeta.json", "w") as f:
-        json.dump(metadata, f, indent=4)
-    print("metadata saved")
 
 if __name__ == "__main__":
     main()

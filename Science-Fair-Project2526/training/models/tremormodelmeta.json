@@ -1,0 +1,18 @@
+{
+    "task": "forecast",
+    "window_size": 128,
+    "stride": 1,
+    "horizon": 1,
+    "features": [
+        "emg",
+        "ax",
+        "ay",
+        "az",
+        "gx",
+        "gy",
+        "gz"
+    ],
+    "class_mapping": {},
+    "final_loss": 0.61109459400177,
+    "final_val_loss": 0.7561467289924622
+}

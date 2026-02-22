@@ -1,0 +1,18 @@
+{
+  "mpc": {
+    "B": 0.0,
+    "lambda_u": 0.032393145586751576,
+    "lambda_du": 0.0023689613193314204,
+    "horizon_seconds": 0.8603619439973472,
+    "u_min": -1.0,
+    "u_max": 1.0,
+    "iters": 120
+  },
+  "control": {
+    "interval_s": 0.0001361370086669922,
+    "phase_offset_rad": 3.141592653589793
+  },
+  "prediction": {
+    "phase_horizon_s": 0.2
+  }
+}
