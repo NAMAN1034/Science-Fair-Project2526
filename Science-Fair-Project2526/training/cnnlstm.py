@@ -14,7 +14,7 @@ def get_settings():
     parser = argparse.ArgumentParser(description="train the tremor analysis model")
     #data stuff
     parser.add_argument("--csv", required=True, help="/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/imuandemgdata.csv")
-    parser.add_argument("--model-out", default="/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/tremor_model.keras")
+    parser.add_argument("--model-out", default="/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/models/tremor_model.keras")
     #hyperparams
     parser.add_argument("--window", type=int, default=128, help="# of samples per snapshot")
     parser.add_argument("--task", default="forecast", choices=["forecast", "classify"])
