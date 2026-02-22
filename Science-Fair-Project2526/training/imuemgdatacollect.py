@@ -6,7 +6,7 @@ import time
 #setup teensy connection to imu
 arduino_port = "/dev/cu.usbmodem187570801"#for my mac to teensy
 baud_rate = 115200 
-run_time = 15 #seconds
+run_time = 300 #seconds
 output_file = "/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/imuandemgdata.csv"
 
 #list for data
