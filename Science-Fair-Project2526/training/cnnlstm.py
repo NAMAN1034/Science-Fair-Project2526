@@ -13,7 +13,7 @@ def get_settings():
     #define params for training
     parser = argparse.ArgumentParser(description="train the tremor analysis model")
     #data stuff
-    parser.add_argument("--csv", required=True, help="/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/imuandemgdata.csv")
+    parser.add_argument("--csv", required=True, help="/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/models/imuandemgdata.csv")
     parser.add_argument("--model-out", default="/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/models/tremor_model.keras")
     #hyperparams
     parser.add_argument("--window", type=int, default=128, help="# of samples per snapshot")
@@ -83,15 +83,15 @@ def plot_results(history, task):
     plt.subplot(1,2,2)
     if task =='classify':
         plt.plot(history.history['accuracy'], label='training accuracy', color='#2ca02c')
-        plt.plot(history.history['val_accuracy'], label='Val Accuracy', color='d62728')
+        plt.plot(history.history['val_accuracy'], label='Val Accuracy', color='#d62728')
     else:
-        plt.plot(history.history['mae'], label='train mae', color='9467bd')
+        plt.plot(history.history['mae'], label='train mae', color='#9467bd')
         plt.plot(history.history['val_mae'], label='val mae', color='#8c564b')
         plt.title('model accuracy')
     plt.xlabel('epochs')
     plt.legend()
     plt.tight_layout()
-    plt.savefig("/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/training_performance.png")
+    plt.savefig("/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/models/training_performance.png")
     print("done graphing")
 
 #main stuff
@@ -102,12 +102,13 @@ def main():
     df, feature_names = prepare_sensor_data(args.csv, args.task)
     sensor_values=df[feature_names].values
     #scale data
-    mean=sensor_values.mean(axis=0)
-    std=sensor_values.std(axis=0)
+    train_count=int(len(sensor_values)*0.7)
+    mean=sensor_values[:train_count].mean(axis=0)
+    std=sensor_values[:train_count].std(axis=0)
     scaled_data=(sensor_values-mean)/(std+1e-7)
     np.savez("/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/tremor_model_norm.npz", mean=mean, std=std)
     #make windows
-    X,y=create_sliding_windows(scaled_data, args.window)
+    X, y = create_sliding_windows(scaled_data, args.window, stride=1)
     #split into 70% train, 15% values, and 15% test sets
     train_idx=int(len(X)*0.7)
     val_idx=int(len(X)*0.85)
@@ -126,9 +127,10 @@ def main():
         callbacks=callbacks,
         verbose = 1
     )
-    
+    plot_results(history, args.task)
+
     #save results
-    os.makedirs("models", exist_ok=True)
+    os.makedirs(os.path.dirname(args.model_out), exist_ok=True)
     model.save(args.model_out)
     print(f"training done. model saved")
     #save a summary

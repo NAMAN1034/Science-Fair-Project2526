@@ -1,0 +1,6 @@
+{
+    "task": "forecast",
+    "final_loss": 0.6714831590652466,
+    "final_val_loss": 0.7991178035736084,
+    "window_size": 128
+}
