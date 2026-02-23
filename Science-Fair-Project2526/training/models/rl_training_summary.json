@@ -1,0 +1,34 @@
+{
+  "csv_path": "/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/imuandemgdata.csv",
+  "signal_col": "gz",
+  "num_samples_used": 79,
+  "dt_seconds": 0.0021758079528808594,
+  "effective_stride": 15,
+  "device": "mps",
+  "episodes": 200,
+  "best_episode": 159,
+  "best_episode_reward_total": -463.59890193907967,
+  "baseline_eval": {
+    "steps": 77.0,
+    "reward_total": -487.15682708207515,
+    "reward_per_step": -6.32671204002695,
+    "amp_norm_mean": 1.5398714168053989,
+    "phase_err_abs_mean": 1.5769967036000065,
+    "action_abs_mean": 0.0
+  },
+  "trained_eval": {
+    "steps": 77.0,
+    "reward_total": -469.8142659049409,
+    "reward_per_step": -6.10148397279144,
+    "amp_norm_mean": 1.4449038843378665,
+    "phase_err_abs_mean": 1.5908928074961113,
+    "action_abs_mean": 0.6331168831168831
+  },
+  "files": {
+    "model_pt": "/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/models/rl_dqn_model.pt",
+    "history_csv": "/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/models/rl_training_history.csv",
+    "summary_json": "/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/models/rl_training_summary.json",
+    "meta_json": "/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/models/rl_inference_meta.json",
+    "norm_npz": "/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/models/rl_state_norm.npz"
+  }
+}

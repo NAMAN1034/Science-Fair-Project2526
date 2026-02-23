@@ -1,0 +1,27 @@
+{
+  "model_path": "/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/models/rl_dqn_model.pt",
+  "action_levels": [
+    0.0,
+    0.25,
+    0.5,
+    0.75,
+    1.0
+  ],
+  "state_dim": 7,
+  "state_features": [
+    "sin_phase",
+    "cos_phase",
+    "amp_norm",
+    "freq_norm",
+    "prev_action",
+    "prev_phase_err_over_pi",
+    "amp_delta_norm"
+  ],
+  "signal_col": "gz",
+  "dt_seconds": 0.0021758079528808594,
+  "normalization": {
+    "amp_scale": 0.02087635857611845,
+    "freq_scale": 190.08800658160777
+  },
+  "note": "Load model weights from rl_dqn_model.pt and build same QNetwork architecture."
+}
