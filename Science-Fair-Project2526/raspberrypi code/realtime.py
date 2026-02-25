@@ -1237,7 +1237,7 @@ class RealtimePipeline:
                             imu_axis = {"gx": gx_s, "gy": gy_s, "gz": gz_s}[self.axis_selected]
                             imu_bp = self.imu_filter.step(imu_axis)
                             self.imu_buf.append(imu_bp)
-                # watchdog for stopping stim if packets stop coming in
+                #watchdog for stopping stim if packets stop coming in
                 if self.last_packet_mono is None or (now_mono - self.last_packet_mono) > self.watchdog_s:
                     if not self.watchdog_tripped:
                         self.output.safe_disable()
@@ -1247,7 +1247,7 @@ class RealtimePipeline:
                     continue
                 if self.watchdog_tripped:
                     self.watchdog_tripped = False
-                # fixed-rate control tick
+                #fixed-rate control tick
                 if now_mono < next_control_mono:
                     continue
                 while next_control_mono <= now_mono:
