@@ -1,0 +1,14 @@
+control:
+  interval_s: 0.05
+logging:
+  log_frequency_hz: 10
+model:
+  sequence_signals: [emg_bp, ax, ay, az, gx, gy, gz]
+output:
+  serial_control:
+    enabled: true
+    mode: stim
+    format: "STIM,{freq_hz:.2f},{pulse_width_us:.2f},{burst_ms:.2f}\n"
+safety:
+  ack_required: true
+  ack_timeout_s: 0.1
