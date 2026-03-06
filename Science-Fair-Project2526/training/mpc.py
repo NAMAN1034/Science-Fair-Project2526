@@ -11,7 +11,7 @@ import pandas as pd
 import csv
 
 #keep paths here to run tuner without having to use args all the fricking time
-DEFAULT_LOGS=["/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/imuandemgdata.csv","/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/*.csv","/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/logs/*.csv","logs/*.csv",]
+DEFAULT_LOGS=["/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/imuandemgdata.csv"]
 #i keep tuning outputs in one designated place
 DEFAULT_OUT_DIR = "/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/models"
 #keep csv organized
@@ -204,7 +204,7 @@ class TremorController:
         self.horizon_s = float(settings.get("horizon", 0.8))
         self.u_min = float(settings.get("u_min", -1.0))
         self.u_max = float(settings.get("u_max", 1.0))
-        self.iters = int(settings.get("iters", 40))
+        self.iters = int(settings.get("iters", 10))
     def compute_optimal_control(self, cur_phi: float, omega: float, target_phi: float) -> float:
         N = max(2, int(round(self.horizon_s / max(self.dt, 1e-6))))
         N = min(N, 200)
@@ -250,7 +250,8 @@ class ParameterOptimizer:
 
             amp_scale = float(np.median(np.abs(tr.amplitude)) + 1e-6)
             prev_u = 0.0
-            for t in range(len(tr.phase) - 1):
+            step = max(1, len(tr.phase) // 5000)  # subsample to ~5000 points for speed cuz i'm in a hurry
+            for t in range(0, len(tr.phase) - 1, step):
                 phi = float(tr.phase[t])
                 phi_pred = float(tr.predicted_phase[t])
                 omega = float(tr.frequency_hz[t] * 2.0 * np.pi)
@@ -397,9 +398,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--w-amp", type=float, default=0.4)
     parser.add_argument("--w-u", type=float, default=0.1)
     parser.add_argument("--w-du", type=float, default=0.1)
-    parser.add_argument("--B-init", type=float, default=-0.05)
-    parser.add_argument("--B-min", type=float, default=-0.6)
-    parser.add_argument("--B-max", type=float, default=0.0)
+    parser.add_argument("--B-init", type=float, default=-0.5)
+    parser.add_argument("--B-min", type=float, default=-1.0)
+    parser.add_argument("--B-max", type=float, default=1.0)
     parser.add_argument("--lambda-u-init", type=float, default=0.01)
     parser.add_argument("--lambda-u-min", type=float, default=1e-5)
     parser.add_argument("--lambda-u-max", type=float, default=0.5)
