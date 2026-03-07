@@ -22,8 +22,8 @@ import yaml
 from scipy.signal import butter, hilbert, sosfilt, sosfilt_zi, welch
 
 LOG = logging.getLogger("realtime")
-#my model training files
-TRAINING_MODELS_DIR = "/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/models"
+import os
+TRAINING_MODELS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../training/models")
 FRAME_HEADER = b"TSF"
 FRAME_MAX_SAMPLES = 64
 #configs

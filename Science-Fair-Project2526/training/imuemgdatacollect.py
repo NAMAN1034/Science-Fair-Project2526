@@ -4,10 +4,10 @@ import pandas as pd
 import time
 
 #setup teensy connection to imu
-arduino_port = "/dev/cu.usbmodem187570801"#for my mac to teensy
+arduino_port = "/dev/cu.usbmodem187570801" # Update this to your Teensy's port (e.g., COM3 on Windows)
 baud_rate = 115200 
-run_time = 300 #seconds
-output_file = "/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/imuandemgdata.csv"
+run_time = 60 #seconds
+output_file = "./imuandemgdata.csv"
 
 #list for data
 data = []

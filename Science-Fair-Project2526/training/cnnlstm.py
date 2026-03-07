@@ -16,7 +16,7 @@ def get_settings():
     #define params for training
     parser = argparse.ArgumentParser(description="train the tremor analysis model")
     #data stuff
-    parser.add_argument("--csv",required=True,help="/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/imuandemgdata.csv",)
+    parser.add_argument("--csv",required=True,help="./imuandemgdata.csv",)
     parser.add_argument("--model-out",default=os.path.join(MODELS_DIR, "tremor_model.keras"),)
     parser.add_argument("--norm-out",default=os.path.join(MODELS_DIR, "tremor_model_norm.npz"),)
     parser.add_argument("--meta-out",default=os.path.join(MODELS_DIR, "tremormodelmeta.json"),)
@@ -31,21 +31,6 @@ def get_settings():
     parser.add_argument("--epochs", type=int, default=50)
     parser.add_argument("--batch-size", type=int, default=32)
     return parser.parse_args()
-#prepping data
-def prepare_sensor_data(path, task, label_col=None):
-    #load the csv and clean noise and/or missing values
-    if not os.path.exists(path):
-        raise FileNotFoundError(f"no file found at given path")
-    df=pd.read_csv(path)
-    features=["emg", "ax", "ay", "az", "gx", "gy", "gz"]
-    #time sort
-    if "time" in df.columns:
-        df=df.sort_values("time")
-    #remove NaNs
-    selected_cols=features+([label_col] if label_col else[])
-    df=df[selected_cols].dropna().reset_index(drop=True)
-    return df, features
-
 def create_sliding_windows(data, window_size, stride=4):
     #chop stream into windows
     x_list, y_list = [],[]
@@ -108,7 +93,7 @@ def plot_results(history, task):
     plt.xlabel('epochs')
     plt.legend()
     plt.tight_layout()
-    plt.savefig("/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/models/training_performance.png")
+    plt.savefig(os.path.join(MODELS_DIR, "training_performance.png"))
     print("done graphing")
 def validate_args(args):
     if args.stride < 1:

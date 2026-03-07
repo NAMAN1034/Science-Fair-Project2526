@@ -11,9 +11,9 @@ import pandas as pd
 import csv
 
 #keep paths here to run tuner without having to use args all the fricking time
-DEFAULT_LOGS=["/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/imuandemgdata.csv"]
+DEFAULT_LOGS=["./imuandemgdata.csv"]
 #i keep tuning outputs in one designated place
-DEFAULT_OUT_DIR = "/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/models"
+DEFAULT_OUT_DIR = "./models"
 #keep csv organized
 @dataclass
 class TremorTrace:
