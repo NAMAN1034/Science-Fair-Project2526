@@ -18,10 +18,10 @@
     "amp_delta_norm"
   ],
   "signal_col": "gz",
-  "dt_seconds": 0.0021758079528808594,
+  "dt_seconds": 0.002325773239135742,
   "normalization": {
-    "amp_scale": 0.02087635857611845,
-    "freq_scale": 190.08800658160777
+    "amp_scale": 2.731985544531891,
+    "freq_scale": 25.35881463254391
   },
   "note": "Load model weights from rl_dqn_model.pt and build same QNetwork architecture."
 }

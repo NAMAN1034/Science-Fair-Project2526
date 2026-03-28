@@ -14,8 +14,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 #absolute paths
-DEFAULT_CSV_PATH = "./imuandemgdata.csv"
-DEFAULT_OUTPUT_DIR = "./models"
+DEFAULT_CSV_PATH = "/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/imuandemgdata.csv"
+DEFAULT_OUTPUT_DIR = "/Users/namanpradhan/scienceproject2526/Science-Fair-Project2526/training/models"
 
 #glue
 def set_seed(seed: int) -> None:
