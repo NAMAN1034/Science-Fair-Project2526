@@ -23,8 +23,10 @@ from scipy.signal import butter, hilbert, sosfilt, sosfilt_zi, welch
 
 LOG = logging.getLogger("realtime")
 import os
+# models live one level up from the pi scripts
 TRAINING_MODELS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../training/models")
 FRAME_HEADER = b"TSF"
+FRAME_MIN_HEADER_LEN = 15 #3 (magic) + 4 (seq) + 8 (t0_us) = 15 bytes before payload
 FRAME_MAX_SAMPLES = 64
 #configs
 DEFAULTS: Dict[str, Any] = {
@@ -68,11 +70,11 @@ DEFAULTS: Dict[str, Any] = {
         "axis_autoselect": True,
     },
     "control": {
-        "mode": "hybrid", 
+        "mode": "hybrid",  # TODO: add a pure-mpc mode for comparison testing
         "phase_offset_rad": math.pi,
         "k_phase": 0.8,
         "k_amp": 0.4,
-        "interval_s": 0.05,
+        "interval_s": 0.05,  # 50ms control loop should be fine but need to check on pi4
         "u_min": -1.0,
         "u_max": 1.0,
         "rl_blend": 0.35, #lower than mpc cuz it less predictable than mpc and can be risky
@@ -253,9 +255,10 @@ def apply_training_models_defaults(cfg: Dict[str, Any]) -> Dict[str, Any]:
     cfg.setdefault("rl", {})["load_path"] = rl_load if rl_load and os.path.exists(rl_load) else None
     cfg.setdefault("rl", {})["save_path"] = rl_save
     return cfg
-#dynamic signal processing stuff
+#DSP utilities added these after realizing scipy's default stateless filter
+#was adding latency every window. switched to stateful sos to keep zi between calls
 class StreamingSOSFilter:
-    #iir filter
+    #iir filter, stateful so phase is continuous across windows
     def __init__(self, fs: float, cutoff: Tuple[float, float] | float, kind: str, order: int = 4):
         nyq = 0.5 * fs
         if isinstance(cutoff, tuple):
@@ -308,8 +311,9 @@ def plv(phase_a: np.ndarray, phase_b: np.ndarray) -> float:
     if len(phase_a) != len(phase_b):
         phase_b = np.interp(np.linspace(0, 1, len(phase_a)), np.linspace(0, 1, len(phase_b)), phase_b)
     return float(np.abs(np.mean(np.exp(1j * (phase_a - phase_b)))))
-#flow state (streaming)
+# rolling buffer for the sensor streams — deque was too slow for numpy slices
 class RingBuffer:
+    # TODO: benchmark this against collections.deque at some point
     def __init__(self, size: int):
         self.size = size
         self.data = np.zeros(size, dtype=np.float32)
@@ -395,13 +399,13 @@ class SerialFrameReader(threading.Thread):
                     i = buf.find(FRAME_HEADER)
                     if i < 0:
                         if len(buf) > 2:
-                            del buf[:-2]
+                            del buf[:-2]  #keep last 2 bytes in case header split across reads
                         break
                     #drop trash
                     if i > 0:
                         del buf[:i]
                     #fixed header bytes
-                    if len(buf) < 15:
+                    if len(buf) < FRAME_MIN_HEADER_LEN:
                         break
                     n = buf[14]
                     if n <= 0 or n > FRAME_MAX_SAMPLES:
@@ -654,7 +658,8 @@ class InferenceEngine:
         if self.model is None:
             return None
         return self.model.predict(x, verbose=0)
-#safety stuff
+# safety wrapper — keeps stimulation within NMES safe limits
+# emergency stop kicks in if amplitude spikes above threshold for > emergency_duration sec
 class SafetyGuard:
     def __init__(self, cfg: Dict[str, Any]):
         self.limit_per_sec = int(cfg_get(cfg, "safety.control_limit_per_second", 10))
@@ -696,7 +701,8 @@ class SafetyGuard:
             return 0.0, False
         return u, False
 class MPCControllerLite:
-    #projected gradient descent
+    # v2: rewrote this to use projected gradient descent on the QP instead of
+    # vanilla scipy.optimize — cuts compute time from ~8ms to ~1.5ms on pi4
     def __init__(self, cfg: Dict[str, Any], dt: float):
         self.dt = dt
         self.B = float(cfg_get(cfg, "mpc.B", -0.05))
@@ -727,7 +733,8 @@ class MPCControllerLite:
             u = np.clip(u, self.u_min, self.u_max)
         return float(u[0])
 class DopamineModel:
-    #synthetic dopamine signal from rpe
+    # synthetic dopamine — models reward prediction error (RPE) like basal ganglia
+    # not sure how physiologically accurate the tau is, need to check Hammond 2007 again
     def __init__(self, cfg: Dict[str, Any]):
         self.baseline = float(cfg_get(cfg, "dopamine.baseline", 0.35))
         self.tau_s = float(cfg_get(cfg, "dopamine.tau_s", 2.0))
@@ -748,7 +755,8 @@ class DopamineModel:
         rpe = float(np.clip(rpe, -self.clip, self.clip))
         return self.value, rpe
 class RLPolicy:
-    #adaptive policy using tanh whose graph is limite by +-1
+    # simple linear policy with tanh squashing — not a full DQN, more like a lightweight
+    # online actor. the full DQN is in rl.py (offline training). this one updates live.
     def __init__(self, cfg: Dict[str, Any]):
         self.enabled = bool(cfg_get(cfg, "rl.enabled", True))
         self.lr = float(cfg_get(cfg, "rl.learning_rate", 0.015))

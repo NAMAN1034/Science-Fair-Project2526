@@ -8,7 +8,6 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Tuple, Optional
 import numpy as np
 import pandas as pd
-import csv
 
 #keep paths here to run tuner without having to use args all the fricking time
 DEFAULT_LOGS=["./imuandemgdata.csv"]
